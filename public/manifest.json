@@ -6,7 +6,7 @@
     },
     "content_scripts": [
       {
-        "matches": ["*://fumen.zui.jp/*"],
+        "matches": ["*://fumen.zui.jp/*", "*://harddrop.com/fumen/*"],
         "js": ["content_scripts.js"]
       }
     ]
