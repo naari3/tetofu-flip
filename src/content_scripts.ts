@@ -3,17 +3,19 @@ import { decoder, encoder, Page, Field } from "tetris-fumen";
 const reverseString = (word: string): string =>
   word.split("").reduceRight((p, c) => p + c);
 
+const replaceMinoString = (word: string): string =>
+  word.replace(/[SZJL]/g, (m) => {
+    if (m == "S" || m == "Z" || m == "J" || m == "L")
+      return { S: "Z", Z: "S", L: "J", J: "L" }[m];
+    else return m;
+  });
+
 const flipPage = (page: Page): Page => {
+  page.comment = replaceMinoString(page.comment);
   const innerField = page.field
     .str({ reduced: false, garbage: true })
     .split("\n")
-    .map((line) =>
-      reverseString(line).replace(/[SZJL]/g, (m) => {
-        if (m == "S" || m == "Z" || m == "J" || m == "L")
-          return { S: "Z", Z: "S", L: "J", J: "L" }[m];
-        else return m;
-      })
-    )
+    .map((line) => replaceMinoString(reverseString(line)))
     .join("");
   console.log(innerField.length);
   const filppedField = Field.create(
