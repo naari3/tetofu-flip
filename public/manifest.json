@@ -1,7 +1,7 @@
 {
     "name": "tetofu-flip",
     "manifest_version": 2,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "browser_action": {
     },
     "content_scripts": [
