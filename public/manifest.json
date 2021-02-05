@@ -1,12 +1,12 @@
 {
-    "name": "tetofu-reverse",
+    "name": "tetofu-flip",
     "manifest_version": 2,
     "version": "1.0",
     "browser_action": {
     },
     "content_scripts": [
       {
-        "matches": ["https://*/*", "http://*/*"],
+        "matches": ["http://fumen.zui.jp/*"],
         "js": ["content_scripts.js"]
       }
     ]

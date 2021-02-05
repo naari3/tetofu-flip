@@ -1,11 +1,16 @@
 {
-  "name": "tetofu-reverse",
+  "name": "tetofu-flip",
   "version": "1.0.0",
   "main": "index.js",
   "author": "naari3 <naari.named@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "tetris-fumen": "^1.1.1",
     "webextension-polyfill-ts": "^0.24.0"
+  },
+  "scripts": {
+    "dev": "yarn webpack",
+    "build": "yarn webpack --mode=production && zip -r tetofu-flip-`git describe`.zip dist"
   },
   "devDependencies": {
     "@types/copy-webpack-plugin": "^6.4.0",

@@ -3,6 +3,7 @@ import path from "path";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 
 const config: Configuration = {
+  mode: "development",
   entry: {
     content_scripts: path.join(__dirname, "src", "content_scripts.ts"),
   },

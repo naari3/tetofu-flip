@@ -1,11 +1,98 @@
-import { browser } from "webextension-polyfill-ts";
+import { decoder, encoder, Page, Field } from "tetris-fumen";
+
+const reverseString = (word: string): string =>
+  word.split("").reduceRight((p, c) => p + c);
+
+const flipPage = (page: Page): Page => {
+  const innerField = page.field
+    .str({ reduced: false, garbage: true })
+    .split("\n")
+    .map((line) =>
+      reverseString(line).replace(/[SZJL]/g, (m) => {
+        if (m == "S" || m == "Z" || m == "J" || m == "L")
+          return { S: "Z", Z: "S", L: "J", J: "L" }[m];
+        else return m;
+      })
+    )
+    .join("");
+  console.log(innerField.length);
+  const filppedField = Field.create(
+    innerField.substring(0, 230),
+    innerField.substring(230)
+  );
+  if (page.operation) {
+    const oldMino = page.mino();
+    let newRotation: "spawn" | "right" | "reverse" | "left";
+    if (page.operation.type == "J" || page.operation.type == "L") {
+      console.log("J OR L");
+      newRotation =
+        page.operation.rotation == "left"
+          ? "right"
+          : page.operation.rotation == "right"
+          ? "left"
+          : page.operation.rotation;
+    } else if (page.operation.type != "T") {
+      newRotation =
+        page.operation.rotation == "left"
+          ? "right"
+          : page.operation.rotation == "right"
+          ? "left"
+          : page.operation.rotation == "spawn"
+          ? "reverse"
+          : page.operation.rotation == "reverse"
+          ? "spawn"
+          : page.operation.rotation;
+    } else {
+      newRotation = page.operation.rotation;
+    }
+    page.operation.rotation = newRotation;
+
+    const newPieceType =
+      page.operation.type == "J"
+        ? "L"
+        : page.operation.type == "L"
+        ? "J"
+        : page.operation.type == "Z"
+        ? "S"
+        : page.operation.type == "S"
+        ? "Z"
+        : page.operation.type;
+    page.operation.type = newPieceType;
+    console.log(page.mino());
+
+    const newX = 9 - page.mino().x;
+
+    const newMino = page.mino();
+
+    const oldMinoY = Math.min(...oldMino.positions().map((p) => p.y));
+    const newMinoY = Math.min(...newMino.positions().map((p) => p.y));
+    const newY = page.mino().y + (oldMinoY - newMinoY);
+
+    page.operation.x = newX;
+    page.operation.y = newY;
+  }
+  page.field = filppedField;
+  return page;
+};
+
+const filp = (tetofu: string): string => {
+  const pages = decoder.decode(tetofu);
+  const encoded = encoder.encode(pages.map((p) => flipPage(p)));
+  return encoded;
+};
 
 const execute = async () => {
-  const value = await browser.storage.local.get("date");
-  console.log(value.date || "日時が記録されていません");
+  const button = document.createElement("button");
+  button.innerText = "flip";
+  button.addEventListener("click", () => {
+    const url = new URL(location.href);
+    const tetofu = url.search;
 
-  await browser.storage.local.set({ date: new Date().toString() });
-  console.log("現在の日時を記録しました");
+    url.search = filp(tetofu);
+
+    location.href = url.toString();
+  });
+  document.body.appendChild(button);
 };
 
 execute();
