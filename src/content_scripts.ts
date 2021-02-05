@@ -23,15 +23,18 @@ const flipPage = (page: Page): Page => {
   if (page.operation) {
     const oldMino = page.mino();
     let newRotation: "spawn" | "right" | "reverse" | "left";
-    if (page.operation.type == "J" || page.operation.type == "L") {
-      console.log("J OR L");
+    if (
+      page.operation.type == "J" ||
+      page.operation.type == "L" ||
+      page.operation.type == "T"
+    ) {
       newRotation =
         page.operation.rotation == "left"
           ? "right"
           : page.operation.rotation == "right"
           ? "left"
           : page.operation.rotation;
-    } else if (page.operation.type != "T") {
+    } else {
       newRotation =
         page.operation.rotation == "left"
           ? "right"
@@ -42,8 +45,6 @@ const flipPage = (page: Page): Page => {
           : page.operation.rotation == "reverse"
           ? "spawn"
           : page.operation.rotation;
-    } else {
-      newRotation = page.operation.rotation;
     }
     page.operation.rotation = newRotation;
 
